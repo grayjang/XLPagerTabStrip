@@ -196,10 +196,9 @@ open class BaseButtonBarPagerTabStripViewController<ButtonBarCellType: UICollect
     // MARK: - UICollectionViewDelegateFlowLayut
 
     @objc open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
-        guard let cellWidthValue = cachedCellWidths?[indexPath.row] else {
-            fatalError("cachedCellWidths for \(indexPath.row) must not be nil")
-        }
-        return CGSize(width: cellWidthValue, height: collectionView.frame.size.height)
+        guard let cachedCellWidths,
+              let width = cachedCellWidths[guarded: indexPath.row] else { return .zero }
+        return CGSize(width: width, height: collectionView.frame.size.height)
     }
 
     open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
