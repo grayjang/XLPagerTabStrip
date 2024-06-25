@@ -235,7 +235,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
     }
 
     open func updateIndicator(for viewController: PagerTabStripViewController, fromIndex: Int, toIndex: Int, withProgressPercentage progressPercentage: CGFloat, indexWasChanged: Bool) {
-        guard shouldUpdateButtonBarView else { return }
+        guard shouldUpdateButtonBarView, indexWasChanged else { return }
         buttonBarView.move(fromIndex: fromIndex, toIndex: toIndex, progressPercentage: progressPercentage, pagerScroll: .yes)
         if let changeCurrentIndexProgressive = changeCurrentIndexProgressive {
             let oldIndexPath = IndexPath(item: currentIndex != fromIndex ? fromIndex : toIndex, section: 0)
@@ -260,7 +260,15 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
                 }
 
             if !indexPathsToReload.isEmpty {
-                buttonBarView.reloadItems(at: indexPathsToReload)
+                DispatchQueue.main.async {
+                    let validIndexPathsToReload = indexPathsToReload.filter {
+                        $0.item >= 0 && $0.item < self.buttonBarView.numberOfItems(inSection: $0.section)
+                    }
+
+                    if !validIndexPathsToReload.isEmpty {
+                        self.buttonBarView.reloadItems(at: validIndexPathsToReload)
+                    }
+                }
             }
         }
 
