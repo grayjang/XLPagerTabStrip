@@ -79,37 +79,42 @@ open class ButtonBarView: UICollectionView {
     open func move(fromIndex: Int, toIndex: Int, progressPercentage: CGFloat, pagerScroll: PagerScroll) {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
 
+        guard let dataSource else { return }
 
-        let numberOfItems = dataSource!.collectionView(self, numberOfItemsInSection: 0)
+        let numberOfItems = dataSource.collectionView(self, numberOfItemsInSection: 0)
 
         guard numberOfItems != 0 else { return }
 
-        let fromFrame: CGRect
+        var fromFrame: CGRect
 
         if fromIndex < 0 || fromIndex > numberOfItems - 1 {
-            if fromIndex < 0 {
-                let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0))
-                fromFrame = cellAtts!.frame.offsetBy(dx: -cellAtts!.frame.width, dy: 0)
-            } else {
-                let cellAtts = layoutAttributesForItem(at: IndexPath(item: (numberOfItems - 1), section: 0))
-                fromFrame = cellAtts!.frame.offsetBy(dx: cellAtts!.frame.width, dy: 0)
-            }
+            if fromIndex < 0, let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0)) {
+                fromFrame = cellAtts.frame.offsetBy(dx: -cellAtts.frame.width, dy: 0)
+            } else if let cellAtts = layoutAttributesForItem(at: IndexPath(item: numberOfItems - 1, section: 0)) {
+                fromFrame = cellAtts.frame.offsetBy(dx: cellAtts.frame.width, dy: 0)
+            } else { return }
         } else {
-            fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
+            if let cellAtts = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))?.frame {
+                fromFrame = cellAtts
+            } else {
+                return
+            }
         }
 
         var toFrame: CGRect
 
         if toIndex < 0 || toIndex > numberOfItems - 1 {
-            if toIndex < 0 {
-                let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0))
-                toFrame = cellAtts!.frame.offsetBy(dx: -cellAtts!.frame.size.width, dy: 0)
-            } else {
-                let cellAtts = layoutAttributesForItem(at: IndexPath(item: (numberOfItems - 1), section: 0))
-                toFrame = cellAtts!.frame.offsetBy(dx: cellAtts!.frame.size.width, dy: 0)
-            }
+            if toIndex < 0, let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0)) {
+                toFrame = cellAtts.frame.offsetBy(dx: -cellAtts.frame.size.width, dy: 0)
+            } else if let cellAtts = layoutAttributesForItem(at: IndexPath(item: (numberOfItems - 1), section: 0)) {
+                toFrame = cellAtts.frame.offsetBy(dx: cellAtts.frame.size.width, dy: 0)
+            } else { return }
         } else {
-            toFrame = layoutAttributesForItem(at: IndexPath(item: toIndex, section: 0))!.frame
+            if let cellAtts = layoutAttributesForItem(at: IndexPath(item: toIndex, section: 0))?.frame {
+                toFrame = cellAtts
+            } else {
+                return
+            }
         }
 
         var targetFrame = fromFrame
