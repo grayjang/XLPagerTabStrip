@@ -79,8 +79,24 @@ open class ButtonBarView: UICollectionView {
     open func move(fromIndex: Int, toIndex: Int, progressPercentage: CGFloat, pagerScroll: PagerScroll) {
         selectedIndex = progressPercentage > 0.5 ? toIndex : fromIndex
 
-        let fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
+
         let numberOfItems = dataSource!.collectionView(self, numberOfItemsInSection: 0)
+
+        guard numberOfItems != 0 else { return }
+
+        let fromFrame: CGRect
+
+        if fromIndex < 0 || fromIndex > numberOfItems - 1 {
+            if fromIndex < 0 {
+                let cellAtts = layoutAttributesForItem(at: IndexPath(item: 0, section: 0))
+                fromFrame = cellAtts!.frame.offsetBy(dx: -cellAtts!.frame.width, dy: 0)
+            } else {
+                let cellAtts = layoutAttributesForItem(at: IndexPath(item: (numberOfItems - 1), section: 0))
+                fromFrame = cellAtts!.frame.offsetBy(dx: cellAtts!.frame.width, dy: 0)
+            }
+        } else {
+            fromFrame = layoutAttributesForItem(at: IndexPath(item: fromIndex, section: 0))!.frame
+        }
 
         var toFrame: CGRect
 
