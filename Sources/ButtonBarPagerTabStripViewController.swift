@@ -319,7 +319,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
 
         collectionViewDidLoad = true
 
-        let childController = viewControllers[indexPath.item] as! IndicatorInfoProvider // swiftlint:disable:this force_cast
+        guard let childController = viewControllers[guarded: indexPath.item] as? IndicatorInfoProvider else { return cell }
         let indicatorInfo = childController.indicatorInfo(for: self)
 
         cell.label.text = indicatorInfo.title

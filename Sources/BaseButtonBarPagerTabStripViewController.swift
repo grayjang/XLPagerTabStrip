@@ -231,7 +231,7 @@ open class BaseButtonBarPagerTabStripViewController<ButtonBarCellType: UICollect
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? ButtonBarCellType else {
             fatalError("UICollectionViewCell should be or extend from ButtonBarViewCell")
         }
-        let childController = viewControllers[indexPath.item] as! IndicatorInfoProvider // swiftlint:disable:this force_cast
+        guard let childController = viewControllers[guarded: indexPath.item] as? IndicatorInfoProvider else { return cell }
         let indicatorInfo = childController.indicatorInfo(for: self)
 
         configure(cell: cell, for: indicatorInfo)
